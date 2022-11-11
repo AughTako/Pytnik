@@ -6,7 +6,6 @@ import os
 import config
 from queue import PriorityQueue
 from itertools import permutations
-from math import inf
 class BaseSprite(pygame.sprite.Sprite):
     images = dict()
 
@@ -153,7 +152,7 @@ class Jocke(Agent):
 
     def get_agent_path(self, coin_distance):
         paths = []
-        minPathCost = inf
+        minPathCost = 999
         minPath = []
         permSet = [i for i in range(1, len(coin_distance))]
         permArr = permutations(permSet)
