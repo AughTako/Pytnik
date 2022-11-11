@@ -156,6 +156,7 @@ class Jocke(Agent):
         minPath = []
         permSet = [i for i in range(1, len(coin_distance))]
         permArr = permutations(permSet)
+        # Add zeros to the start and end of the path and then calcuate the path
         for permutation in permArr:
             paths.append([0] + list(permutation) + [0])
         print(paths)
