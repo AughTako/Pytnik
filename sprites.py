@@ -6,6 +6,8 @@ import os
 import config
 from queue import PriorityQueue
 from itertools import permutations
+
+
 class BaseSprite(pygame.sprite.Sprite):
     images = dict()
 
@@ -152,14 +154,13 @@ class Jocke(Agent):
 
     def get_agent_path(self, coin_distance):
         paths = []
-        minPathCost = 999
+        minPathCost = 9999
         minPath = []
         permSet = [i for i in range(1, len(coin_distance))]
         permArr = permutations(permSet)
         # Add zeros to the start and end of the path and then calcuate the path
         for permutation in permArr:
             paths.append([0] + list(permutation) + [0])
-        print(paths)
         for path in paths:
             currSum = 0
             for i in range(len(path) - 1):
@@ -168,3 +169,39 @@ class Jocke(Agent):
                 minPathCost = currSum
                 minPath = path
         return minPath
+
+
+# # Uki - Branch and Bound
+class Uki(Agent):
+    def __int__(self, x, y, file_name):
+        super().__init__(x, y, file_name)
+
+    def get_agent_path(self, coin_distance):
+        queue = PriorityQueue()
+        i = 0
+        j = 0
+        partialPath = []
+        for k in range(len(coin_distance[i])):
+            partialPath = [0]
+            if coin_distance[i][j] != 0:
+                partialPath.append(k)
+                partialPath.reverse()
+                queue.put((coin_distance[i][j], partialPath))
+            j += 1
+        current = queue.get()
+        possiblePaths = []
+        while len(current[1]) != len(coin_distance):
+            j = 0
+            i = current[1][0]
+            for k in range(len(coin_distance[i])):
+                currentArr = current[1].copy()
+                if coin_distance[i][j] != 0 and k not in current[1]:
+                    currentArr.insert(0, k)
+                    if len(currentArr) == len(coin_distance):
+                        possiblePaths.append([current[0] + coin_distance[i][j], currentArr])
+                    queue.put((current[0] + coin_distance[i][j], currentArr))
+                j += 1
+            current = queue.get()
+        for i in range(len(possiblePaths)):
+            possiblePaths[i][0] += coin_distance[possiblePaths[i][1][0]][0]
+        return [0] + min(possiblePaths)[1]
