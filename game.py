@@ -59,10 +59,10 @@ class Game:
         self.collected_coins = [CollectedCoin(coin) for coin in self.coins]
         self.collected_coins_sprites = pygame.sprite.Group()
         module = __import__('sprites')
-        class_ = getattr(module, sys.argv[2] if len(sys.argv) > 2 else 'ExampleAgent')
+        class_ = getattr(module, sys.argv[2] if len(sys.argv) > 2 else 'Micko')
         self.agent = class_(agent_pos[0], agent_pos[1],
-                            f'{sys.argv[2]}.png' if len(sys.argv) > 2 else 'ExampleAgent.png')
-        self.max_elapsed_time = float(sys.argv[3]) if len(sys.argv) > 3 else 5.
+                            f'{sys.argv[2]}.png' if len(sys.argv) > 2 else 'Micko.png')
+        self.max_elapsed_time = float(sys.argv[3]) if len(sys.argv) > 3 else 10.
         self.elapsed_time = 0.
         self.agent_sprites = pygame.sprite.Group()
         self.agent_sprites.add(self.agent)

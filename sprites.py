@@ -171,7 +171,7 @@ class Jocke(Agent):
         return minPath
 
 
-# # Uki - Branch and Bound
+# Uki - Branch and Bound
 class Uki(Agent):
     def __int__(self, x, y, file_name):
         super().__init__(x, y, file_name)
@@ -200,6 +200,63 @@ class Uki(Agent):
                     if len(currentArr) == len(coin_distance):
                         possiblePaths.append([current[0] + coin_distance[i][j], currentArr])
                     queue.put((current[0] + coin_distance[i][j], currentArr))
+                j += 1
+            current = queue.get()
+        for i in range(len(possiblePaths)):
+            possiblePaths[i][0] += coin_distance[possiblePaths[i][1][0]][0]
+        return [0] + min(possiblePaths)[1]
+
+
+class Micko(Agent):
+    def __int__(self, x, y, file_name):
+        super().__init__(x, y, file_name)
+
+    def MST(self, coin_dist, currentPathLen):
+        visited = [0]
+        cost = 0
+        while len(visited) != len(coin_dist) - currentPathLen + 1:
+            minCost = 9999
+            nextj = 0
+            nexti = 0
+            flag = 0
+            for currentVertex in visited:
+                for index in range(len(coin_dist)):
+                    if index not in visited:
+                        if coin_dist[currentVertex][index] < minCost:
+                            minCost = coin_dist[currentVertex][index]
+                            nexti = index
+                            nextj = currentVertex
+                            flag = 1
+            if not flag:
+                continue
+            visited.append(nexti)
+            cost += coin_dist[nexti][nextj]
+        return cost
+
+    def get_agent_path(self, coin_distance):
+        queue = PriorityQueue()
+        i = 0
+        j = 0
+        partialPath = []
+        for k in range(len(coin_distance[i])):
+            partialPath = [0]
+            if coin_distance[i][j] != 0:
+                partialPath.append(k)
+                partialPath.reverse()
+                queue.put((self.MST(coin_distance, len(partialPath)) + coin_distance[i][j], partialPath))
+            j += 1
+        current = queue.get()
+        possiblePaths = []
+        while len(current[1]) != len(coin_distance):
+            j = 0
+            i = current[1][0]
+            for k in range(len(coin_distance[i])):
+                currentArr = current[1].copy()
+                if coin_distance[i][j] != 0 and k not in current[1]:
+                    currentArr.insert(0, k)
+                    if len(currentArr) == len(coin_distance):
+                        possiblePaths.append([self.MST(coin_distance, len(currentArr)) + current[0] + coin_distance[i][j], currentArr])
+                    queue.put((self.MST(coin_distance, len(currentArr)) + current[0] + coin_distance[i][j], currentArr))
                 j += 1
             current = queue.get()
         for i in range(len(possiblePaths)):
